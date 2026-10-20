@@ -28,7 +28,7 @@ class Settings:
  telegram_owner_id:int=_int("TELEGRAM_OWNER_ID",0)
  telegram_chat_id:int=_int("TELEGRAM_CHAT_ID",0)
  gemini_api_key:str=os.getenv("GEMINI_API_KEY","").strip()
- gemini_model:str=os.getenv("GEMINI_MODEL","gemini-4-argon").strip()
+ gemini_model:str=os.getenv("GEMINI_MODEL","gemini-3.6-flash").strip()
  twelve_data_api_key:str=os.getenv("TWELVE_DATA_API_KEY","").strip()
  deriv_app_id:str=os.getenv("DERIV_APP_ID","").strip()
  deriv_demo_token:str=os.getenv("DERIV_DEMO_TOKEN","").strip()
