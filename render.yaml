@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: vibe-ai-trading-agent
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.10
+      - key: AUTO_TRADE
+        value: "false"
+      - key: ENABLE_LIVE_TRADING
+        value: "false"
+      - key: DEFAULT_MODE
+        value: demo
+      - key: DEFAULT_EXPIRY_MINUTES
+        value: "5"
+      - key: SIGNAL_INTERVAL_SECONDS
+        value: "3600"
