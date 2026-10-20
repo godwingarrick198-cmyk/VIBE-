@@ -1,6 +1,6 @@
 # VIBE — AI Trading Agent
 
-VIBE is a Python service for Gemini 3.6 Flash-assisted BUY/SELL signal analysis, Twelve Data candles, Telegram controls, optional Deriv contract execution, Render hosting, and an illustrative historical EMA baseline.
+VIBE is a Python service for Gemini-assisted BUY/SELL signal analysis across six configured forex pairs, Twelve Data candles, Telegram controls, optional Deriv contract execution, Render hosting, and an illustrative historical EMA baseline.
 
 ## Current safety defaults
 
@@ -40,4 +40,4 @@ Optional controls are documented in `.env.example`. Use `AUTO_TRADE=false` until
 
 Run `pip install -r requirements.txt`, then `python -m compileall -q app backtest.py` and `pytest -q`.
 
-For a historical candle baseline, set `TWELVE_DATA_API_KEY` and run `python backtest.py --symbol EUR/USD --months 6`. This simple EMA baseline is illustrative, assumes a fixed payout multiplier, and is not a simulation of the Gemini strategy or a guarantee of returns. Historical requests can be limited by Twelve Data plan quotas and symbol support.
+For a six-month historical candle baseline, set `TWELVE_DATA_API_KEY` and run `python backtest.py --symbol EUR/USD --months 6`. The live signal cycle currently analyzes the latest 120 five-minute candles per configured asset; it does not feed six months of history into Gemini automatically. This simple EMA baseline is illustrative, assumes a fixed payout multiplier, and is not a simulation of the Gemini strategy or a guarantee of returns. Historical requests can be limited by Twelve Data plan quotas and symbol support.
