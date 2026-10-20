@@ -7,7 +7,7 @@ from telegram.ext import Application,CommandHandler,ContextTypes
 from app.config import settings
 from app.deriv import DerivClient,DerivAPIError
 from app.gemini_signal import GeminiSignalAnalyzer,AnalysisError
-from app.indicators import candle_features
+from app.indicators import candle_features,historical_features
 from app.market_data import TwelveDataClient,MarketDataError
 from app.risk import RiskState
 log=logging.getLogger(__name__)
@@ -18,6 +18,7 @@ class TradingAgent:
   self.risk=RiskState(settings.profit_target,settings.max_session_loss,settings.session_hours,settings.max_trades_per_session,settings.max_consecutive_losses)
   self.market=TwelveDataClient(settings.twelve_data_api_key);self.analyzer=GeminiSignalAnalyzer(settings.gemini_api_key,settings.gemini_model)
   self.signals=[];self.trades=[];self.last_cycle="Not run yet";self.last_error="";self.base_stake_override=settings.base_stake
+  self.history_cache={};self.history_cache_ttl=timedelta(hours=24)
  def deriv(self):
   return DerivClient(settings.deriv_app_id,settings.deriv_demo_token if self.mode=="demo" else settings.deriv_real_token)
  def status_text(self):
@@ -31,8 +32,16 @@ class TradingAgent:
   self.last_cycle=datetime.now().isoformat(timespec="seconds");candidates=[]
   for asset in settings.assets:
    try:
+    cached=self.history_cache.get(asset.twelve_symbol)
+    if cached is None or datetime.now()-cached["fetched_at"]>=self.history_cache_ttl:
+     history=await self.market.six_month_history(asset.twelve_symbol,months=6)
+     historical=historical_features(history)
+     self.history_cache[asset.twelve_symbol]={"fetched_at":datetime.now(),"features":historical}
+    else:
+     historical=cached["features"]
     candles=await self.market.candles(asset.twelve_symbol,"5min",120)
-    result=await self.analyzer.analyze(asset.twelve_symbol,candle_features(candles))
+    features={"historical_6_months":historical,"live_5min":candle_features(candles)}
+    result=await self.analyzer.analyze(asset.twelve_symbol,features)
     if result["confidence"]>=settings.min_confidence:candidates.append({**result,"twelve_symbol":asset.twelve_symbol,"deriv_symbol":asset.deriv_symbol})
    except (MarketDataError,AnalysisError,ValueError) as exc:
     self.last_error=f"{asset.twelve_symbol}: {exc}";log.warning("Skipping %s: %s",asset.twelve_symbol,exc)
