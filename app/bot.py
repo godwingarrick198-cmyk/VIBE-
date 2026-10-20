@@ -99,7 +99,7 @@ async def guard(update):
   return False
  return True
 async def start(update,context):
- if await guard(update):await update.effective_message.reply_text("VIBE is online. Execution is OFF by default. Commands: /status /demo /live /confirm_live YES /stop /resume /balance /target 20 /maxloss 5 /stake 1 /signals /trades /pnl")
+ if await guard(update):await update.effective_message.reply_text("VIBE is online. Execution is OFF by default. Commands: /status /demo /live /confirm_live YES /stop /resume /balance /target 20|off /maxloss 5|off /stake 1 /signals /trades /pnl")
 async def status(update,context):
  if await guard(update):await update.effective_message.reply_text(context.application.bot_data["agent"].status_text())
 async def demo(update,context):
@@ -140,10 +140,14 @@ async def balance(update,context):
  except Exception as exc:await update.effective_message.reply_text(f"Could not read Deriv balance: {exc}")
 async def set_amount(update,context,field):
  if not await guard(update):return
+ a=context.application.bot_data["agent"]
+ if field in {"target","maxloss"} and context.args and context.args[0].lower()=="off":
+  if field=="target":a.risk.profit_target=None;reply="Profit target disabled."
+  else:a.risk.max_session_loss=None;reply="Maximum session loss limit disabled."
+  await update.effective_message.reply_text(reply);return
  try:v=float(context.args[0]);assert v>0
  except (ValueError,IndexError,AssertionError):
-  await update.effective_message.reply_text("Supply a positive number.");return
- a=context.application.bot_data["agent"]
+  await update.effective_message.reply_text("Use a positive number or 'off'.");return
  if field=="target":a.risk.profit_target=v;reply=f"Profit target: {v:.2f} {settings.deriv_currency}"
  elif field=="maxloss":a.risk.max_session_loss=v;reply=f"Maximum loss: {v:.2f} {settings.deriv_currency}"
  elif v>settings.max_stake:
