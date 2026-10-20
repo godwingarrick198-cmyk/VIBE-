@@ -16,7 +16,7 @@ class Asset:
  twelve_symbol:str
  deriv_symbol:str
 def _assets():
- raw=os.getenv("ASSETS","EUR/USD:frxEURUSD,EUR/CHF:frxEURCHF,GBP/USD:frxGBPUSD"); out=[]
+ raw=os.getenv("ASSETS","EUR/USD:frxEURUSD,EUR/CHF:frxEURCHF,GBP/USD:frxGBPUSD,USD/JPY:frxUSDJPY,AUD/USD:frxAUDUSD,USD/CAD:frxUSDCAD"); out=[]
  for item in raw.split(","):
   if ":" in item:
    a,b=item.strip().split(":",1)
