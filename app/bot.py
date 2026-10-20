@@ -99,7 +99,7 @@ async def guard(update):
   return False
  return True
 async def start(update,context):
- if await guard(update):await update.effective_message.reply_text("VIBE is online. Execution is OFF by default. Commands: /status /demo /live /confirm_live YES /stop /resume /balance /target 20|off /maxloss 5|off /stake 1 /signals /trades /pnl")
+ if await guard(update):await update.effective_message.reply_text("VIBE is online. Default mode is DEMO. Commands: /status /demo /live /confirm_live YES /stop /resume /balance /target 20|off /maxloss 5|off /stake 1 /signals /trades /pnl")
 async def status(update,context):
  if await guard(update):await update.effective_message.reply_text(context.application.bot_data["agent"].status_text())
 async def demo(update,context):
