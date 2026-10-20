@@ -12,8 +12,9 @@ async def lifespan(app):
  if settings.telegram_bot_token:
   bot=build_bot();await bot.initialize();agent=TradingAgent();bot.bot_data["agent"]=agent
   task=asyncio.create_task(signal_loop(bot,agent))
+  await bot.start();bot_started=True
   if bot.updater:await bot.updater.start_polling(drop_pending_updates=True);updater_started=True
-  await bot.start();bot_started=True;log.info("Telegram polling started; execution OFF by default")
+  log.info("Telegram polling started; execution OFF by default")
  else:log.warning("TELEGRAM_BOT_TOKEN missing; health endpoint only")
  app.state.telegram_app=bot
  try:yield
