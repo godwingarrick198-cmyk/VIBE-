@@ -7,7 +7,7 @@ VIBE is a Python service for Gemini-assisted BUY/SELL signal analysis across six
 - Trading execution is enabled as a capability: choose DEMO or LIVE from Telegram.
 - Default mode is DEMO; LIVE requires a configured real Deriv token and `/live` followed by `/confirm_live YES`.
 - Use `/stop` to stop new orders at any time.
-- Contract expiry defaults to five minutes; analysis runs hourly.
+- Contract expiry defaults to five minutes; analysis runs every five minutes, with a maximum of 50 trades per 24-hour session.
 - Telegram commands are restricted to the numeric `TELEGRAM_OWNER_ID`.
 - Weak signals are skipped; no WAIT signal is sent.
 - Confidence is an uncalibrated model score, not a probability.
@@ -33,9 +33,9 @@ Optional controls are documented in `.env.example`. The repository defaults `AUT
 
 - `/start`, `/status`, `/signals`, `/trades`, `/pnl`
 - `/demo`, `/live`, `/confirm_live YES`, `/stop`, `/resume`
-- `/balance`, `/target 20`, `/maxloss 5`, `/stake 1`
+- `/balance`, `/target 20` or `/target off`, `/maxloss 5` or `/maxloss off`, `/stake 1`
 
-`/stop` stops new orders; it does not close already-open contracts. Session state is in memory and resets on service restart.
+`/stop` stops new orders; it does not close already-open contracts. The 24-hour session allows at most 50 trades. Profit and loss limits can be enabled or disabled in Telegram using `/target 20` or `/target off`, and `/maxloss 5` or `/maxloss off`. Session state is in memory and resets on service restart.
 
 ## Tests and historical baseline
 
