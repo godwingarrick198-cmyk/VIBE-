@@ -23,7 +23,7 @@ class TradingAgent:
   return DerivClient(settings.deriv_app_id,settings.deriv_demo_token if self.mode=="demo" else settings.deriv_real_token)
  def status_text(self):
   allowed,reason=self.risk.can_trade() if self.execution_enabled and settings.auto_trade else (False,"Execution disabled by control or AUTO_TRADE=false")
-  return (f"VIBE AI Trading Agent\nMode: {self.mode.upper()}\nExecution: {'ON' if self.execution_enabled and settings.auto_trade and allowed else 'OFF'} ({reason})\nExpiry: {settings.default_expiry_minutes} minute(s)\nSession P/L: {self.risk.pnl:+.2f} {settings.deriv_currency}\nTrades: {self.risk.trades}/{self.risk.max_trades}\nProfit target: {self.risk.profit_target:.2f}\nMaximum loss: {abs(self.risk.max_session_loss):.2f}\nLast analysis: {self.last_cycle}\nLast error: {self.last_error or 'None'}")
+  return (f"VIBE AI Trading Agent\nMode: {self.mode.upper()}\nExecution: {'ON' if self.execution_enabled and settings.auto_trade and allowed else 'OFF'} ({reason})\nExpiry: {settings.default_expiry_minutes} minute(s)\nSession P/L: {self.risk.pnl:+.2f} {settings.deriv_currency}\nTrades: {self.risk.trades}/{self.risk.max_trades}\nProfit target: {self.risk.profit_target if self.risk.profit_target is not None else 'OFF'}\nMaximum loss: {abs(self.risk.max_session_loss) if self.risk.max_session_loss is not None else 'OFF'}\nLast analysis: {self.last_cycle}\nLast error: {self.last_error or 'None'}")
  async def send_owner(self,app,text):
   if settings.telegram_chat_id:
    try:await app.bot.send_message(chat_id=settings.telegram_chat_id,text=text)
