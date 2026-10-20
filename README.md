@@ -1,20 +1,43 @@
 # VIBE — AI Trading Agent
 
-AI-assisted BUY/SELL signals and optional automated execution through Deriv. Telegram is the control panel; Gemini analyses candle features; Twelve Data supplies candles; Render hosts the service.
+VIBE is a Python service for Gemini-assisted BUY/SELL signal analysis, Twelve Data candles, Telegram controls, optional Deriv contract execution, Render hosting, and an illustrative historical EMA baseline.
 
-## Safety
+## Current safety defaults
 
-- Demo-first. Automatic execution is off at startup; live trading requires explicit configuration and Telegram confirmation.
-- Only qualifying BUY/SELL signals are sent; weak setups are skipped rather than forcing a trade.
-- Default contract expiry is 5 minutes. BUY maps to CALL and SELL to PUT.
-- Confidence is an uncalibrated model score, not a probability or guarantee.
-- Martingale levels are informational only; automatic recovery trades are not enabled.
-- Never commit API keys, Deriv tokens, or Telegram bot tokens.
+- Signal-only by default: `AUTO_TRADE=false`.
+- Live trading locked by default: `ENABLE_LIVE_TRADING=false`.
+- Contract expiry defaults to five minutes; analysis runs hourly.
+- Telegram commands are restricted to the numeric `TELEGRAM_OWNER_ID`.
+- Weak signals are skipped; no WAIT signal is sent.
+- Confidence is an uncalibrated model score, not a probability.
+- Martingale levels are display-only; no automatic recovery staking is implemented.
+- Trading can lose money. Backtests are not proof of future performance.
 
-## Project
+## Deploy on Render
 
-The full project package is prepared separately as `VIBE-AI-TRADING-AGENT.zip`. It includes the Python app, Deriv/Twelve Data/Gemini integrations, Telegram controls, Render configuration, backtesting script, and tests.
+1. Create a Telegram bot with BotFather and obtain its token.
+2. Create API credentials with Gemini, Twelve Data, and Deriv. Start with a Deriv demo token.
+3. Connect this repository to Render as a Web Service. The included `render.yaml` sets the start command.
+4. Add the environment variables below in Render's Environment page. Never commit real tokens.
+5. Deploy and check `/health`. Send `/start` to the bot from the Telegram account whose numeric ID is configured.
+6. Confirm signals and Deriv demo symbols/contracts before enabling demo execution. Live execution requires a separate environment unlock and explicit Telegram confirmation.
 
-## Deployment
+## Required environment variables
 
-Keep `AUTO_TRADE=false` and `ENABLE_LIVE_TRADING=false` until demo credentials, supported symbols, contracts, result monitoring, risk limits, and stop controls have been verified. Trading can lose money; no signal or backtest guarantees profit.
+`TELEGRAM_BOT_TOKEN`, `TELEGRAM_OWNER_ID`, `TELEGRAM_CHAT_ID`, `GEMINI_API_KEY`, `TWELVE_DATA_API_KEY`, `DERIV_APP_ID`, and `DERIV_DEMO_TOKEN` for demo balance/orders.
+
+Optional controls are documented in `.env.example`. Use `AUTO_TRADE=false` until the full workflow is verified. To permit demo orders, set `AUTO_TRADE=true` and redeploy, then use `/resume`. Live mode additionally requires `ENABLE_LIVE_TRADING=true`, a real Deriv token, `/live`, and `/confirm_live YES`.
+
+## Telegram commands
+
+- `/start`, `/status`, `/signals`, `/trades`, `/pnl`
+- `/demo`, `/live`, `/confirm_live YES`, `/stop`, `/resume`
+- `/balance`, `/target 20`, `/maxloss 5`, `/stake 1`
+
+`/stop` stops new orders; it does not close already-open contracts. Session state is in memory and resets on service restart.
+
+## Tests and historical baseline
+
+Run `pip install -r requirements.txt`, then `python -m compileall -q app backtest.py` and `pytest -q`.
+
+For a historical candle baseline, set `TWELVE_DATA_API_KEY` and run `python backtest.py --symbol EUR/USD --months 6`. This simple EMA baseline is illustrative, assumes a fixed payout multiplier, and is not a simulation of the Gemini strategy or a guarantee of returns. Historical requests can be limited by Twelve Data plan quotas and symbol support.
