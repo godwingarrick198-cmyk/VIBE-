@@ -4,8 +4,9 @@ VIBE is a Python service for Gemini-assisted BUY/SELL signal analysis across six
 
 ## Current safety defaults
 
-- Signal-only by default: `AUTO_TRADE=false`.
-- Live trading locked by default: `ENABLE_LIVE_TRADING=false`.
+- Trading execution is enabled as a capability: choose DEMO or LIVE from Telegram.
+- Default mode is DEMO; LIVE requires a configured real Deriv token and `/live` followed by `/confirm_live YES`.
+- Use `/stop` to stop new orders at any time.
 - Contract expiry defaults to five minutes; analysis runs hourly.
 - Telegram commands are restricted to the numeric `TELEGRAM_OWNER_ID`.
 - Weak signals are skipped; no WAIT signal is sent.
@@ -26,7 +27,7 @@ VIBE is a Python service for Gemini-assisted BUY/SELL signal analysis across six
 
 `TELEGRAM_BOT_TOKEN`, `TELEGRAM_OWNER_ID`, `TELEGRAM_CHAT_ID`, `GEMINI_API_KEY`, `TWELVE_DATA_API_KEY`, `DERIV_APP_ID`, and `DERIV_DEMO_TOKEN` for demo balance/orders.
 
-Optional controls are documented in `.env.example`. Use `AUTO_TRADE=false` until the full workflow is verified. To permit demo orders, set `AUTO_TRADE=true` and redeploy, then use `/resume`. Live mode additionally requires `ENABLE_LIVE_TRADING=true`, a real Deriv token, `/live`, and `/confirm_live YES`.
+Optional controls are documented in `.env.example`. The repository defaults `AUTO_TRADE=true` and `ENABLE_LIVE_TRADING=true`, while `DEFAULT_MODE=demo` keeps startup in demo mode. If these variables already exist in Render as `false`, change each to `true` once and redeploy; after that, choose `/demo` or `/live` in Telegram without changing Render. Demo execution starts with `/demo` then `/resume`. Live requires a real Deriv token, `/live`, and `/confirm_live YES`.
 
 ## Telegram commands
 
