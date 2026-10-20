@@ -1,6 +1,6 @@
 # VIBE — AI Trading Agent
 
-VIBE is a Python service for Gemini 4 Argon-assisted BUY/SELL signal analysis, Twelve Data candles, Telegram controls, optional Deriv contract execution, Render hosting, and an illustrative historical EMA baseline.
+VIBE is a Python service for Gemini 3.6 Flash-assisted BUY/SELL signal analysis, Twelve Data candles, Telegram controls, optional Deriv contract execution, Render hosting, and an illustrative historical EMA baseline.
 
 ## Current safety defaults
 
@@ -16,7 +16,7 @@ VIBE is a Python service for Gemini 4 Argon-assisted BUY/SELL signal analysis, T
 ## Deploy on Render
 
 1. Create a Telegram bot with BotFather and obtain its token.
-2. Create API credentials with Gemini 4 Argon (model ID: `gemini-4-argon`), Twelve Data, and Deriv. Start with a Deriv demo token.
+2. Create API credentials with Gemini 3.6 Flash (model ID: `gemini-3.6-flash`), Twelve Data, and Deriv. Start with a Deriv demo token.
 3. Connect this repository to Render as a Web Service. The included `render.yaml` sets the start command.
 4. Add the environment variables below in Render's Environment page. Never commit real tokens.
 5. Deploy and check `/health`. Send `/start` to the bot from the Telegram account whose numeric ID is configured.
