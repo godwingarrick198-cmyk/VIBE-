@@ -20,12 +20,16 @@ class TwelveDataClient:
   if len(rows)<30:raise MarketDataError(f"Only {len(rows)} usable candles returned for {symbol}")
   return rows
  async def six_month_history(self,symbol:str,months:int=6)->list[dict]:
-  end=datetime.now(timezone.utc).replace(tzinfo=None,second=0,microsecond=0);start=end-timedelta(days=30*months);cursor=start;all_rows={}
-  while cursor<end:
-   chunk_end=min(cursor+timedelta(days=7),end)
-   rows=await self.candles(symbol,"5min",2500,cursor.strftime("%Y-%m-%d %H:%M:%S"),chunk_end.strftime("%Y-%m-%d %H:%M:%S"))
-   for row in rows:all_rows[row["datetime"]]=row
-   cursor=chunk_end
-  result=[all_rows[k] for k in sorted(all_rows)]
-  if len(result)<100:raise MarketDataError("Historical request returned too few candles; check symbol, plan quota, and date support")
-  return result
+  # Hourly candles cover about six months in one request (roughly 4,300 FX bars),
+  # avoiding hundreds of 5-minute history requests and excessive API quota use.
+  end=datetime.now(timezone.utc).replace(tzinfo=None,second=0,microsecond=0)
+  start=end-timedelta(days=30*months)
+  rows=await self.candles(symbol,"1h",5000,start.strftime("%Y-%m-%d %H:%M:%S"),end.strftime("%Y-%m-%d %H:%M:%S"))
+  try:
+   first=datetime.fromisoformat(rows[0]["datetime"])
+   last=datetime.fromisoformat(rows[-1]["datetime"])
+  except (TypeError,ValueError,IndexError) as exc:
+   raise MarketDataError("Historical candles did not include valid timestamps") from exc
+  if (last-first).total_seconds()<timedelta(days=max(30*months-10,150)).total_seconds():
+   raise MarketDataError(f"Provider returned only {(last-first).days} days of history for {symbol}; six months are required. Check Twelve Data plan and symbol support.")
+  return rows
