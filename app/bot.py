@@ -153,8 +153,8 @@ async def trades(update,context):
  rows=context.application.bot_data["agent"].trades
  lines=[]
  for x in rows[:10]:
-  profit='pending' if x['profit'] is None else f\"{x['profit']:+.2f}\"
-  lines.append(f\"{x['created_at']} | {x['symbol']} | {x['direction']} | {x['status']} | {profit}\")
+  profit='pending' if x['profit'] is None else f"{x['profit']:+.2f}"
+  lines.append(f"{x['created_at']} | {x['symbol']} | {x['direction']} | {x['status']} | {profit}")
  await update.effective_message.reply_text("\n".join(lines) if lines else "No trades recorded in this process.")
 async def pnl(update,context):
  if await guard(update):
